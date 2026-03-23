@@ -1,0 +1,96 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# rename.sh
+# Changes Android device name & Bluetooth name via root
+# GitHub: github.com/lucivaantarez/rename
+
+VERSION="1.0"
+REMOTE_URL="https://raw.githubusercontent.com/lucivaantarez/rename/main/rename.sh"
+SELF="$HOME/rename.sh"
+
+# -----------------------------------------------
+# Auto-update check
+# -----------------------------------------------
+check_update() {
+  REMOTE_VERSION=$(curl -sL "$REMOTE_URL" 2>/dev/null | grep '^VERSION=' | head -1 | cut -d'"' -f2)
+
+  if [[ -z "$REMOTE_VERSION" ]]; then
+    return
+  fi
+
+  if [[ "$REMOTE_VERSION" != "$VERSION" ]]; then
+    clear
+    echo "==============================="
+    echo "  Update tersedia!"
+    echo "  Local : v$VERSION"
+    echo "  Remote: v$REMOTE_VERSION"
+    echo "==============================="
+    echo ""
+    echo "  Mengunduh versi baru..."
+    curl -sL "$REMOTE_URL" -o "$SELF"
+    chmod +x "$SELF"
+    echo "  ✓ Update selesai. Memuat ulang..."
+    sleep 1
+    exec bash "$SELF"
+    exit 0
+  fi
+}
+
+check_update
+
+# -----------------------------------------------
+# Menu
+# -----------------------------------------------
+show_menu() {
+  clear
+  CURRENT=$(su -c "settings get global device_name" 2>/dev/null)
+  [[ -z "$CURRENT" ]] && CURRENT="(tidak ditemukan)"
+
+  echo "==============================="
+  echo "  Device Name Changer v$VERSION"
+  echo "==============================="
+  echo ""
+  echo "  Current Device Name:"
+  echo "  $CURRENT"
+  echo ""
+  echo "  1. Change Device Name"
+  echo "  0. Exit"
+  echo ""
+  echo "==============================="
+  echo -n "  Pilih: "
+}
+
+while true; do
+  show_menu
+  read CHOICE
+
+  case "$CHOICE" in
+    1)
+      clear
+      echo "==============================="
+      echo "  Change Device Name"
+      echo "==============================="
+      echo ""
+      read -p "  Nama baru: " NEW_NAME
+
+      if [[ -z "$NEW_NAME" ]]; then
+        continue
+      fi
+
+      su -c "settings put global device_name \"$NEW_NAME\""
+      su -c "settings put secure bluetooth_name \"$NEW_NAME\""
+
+      clear
+      echo "==============================="
+      echo "  ✓ Berhasil diubah ke: $NEW_NAME"
+      echo "==============================="
+      sleep 1.5
+      ;;
+    0)
+      clear
+      exit 0
+      ;;
+    *)
+      continue
+      ;;
+  esac
+done
