@@ -3,7 +3,7 @@
 # Changes Android device name & Bluetooth name via root
 # GitHub: github.com/lucivaantarez/rename
 
-VERSION="1.1"
+VERSION="1.2"
 REMOTE_URL="https://raw.githubusercontent.com/lucivaantarez/rename/main/rename.sh"
 SELF="$HOME/rename.sh"
 
@@ -15,15 +15,15 @@ check_update() {
   if [[ "$REMOTE_VERSION" != "$VERSION" ]]; then
     clear
     echo "================================"
-    echo " Update tersedia!"
-    echo " Local : v$VERSION"
-    echo " Remote: v$REMOTE_VERSION"
+    echo "Update tersedia!"
+    echo "Local : v$VERSION"
+    echo "Remote: v$REMOTE_VERSION"
     echo "================================"
     echo ""
-    echo " Mengunduh versi baru..."
+    echo "Mengunduh versi baru..."
     curl -sL "$REMOTE_URL" | sed 's/\r//' > "$SELF"
     chmod +x "$SELF"
-    echo " Selesai. Memuat ulang..."
+    echo "Selesai. Memuat ulang..."
     sleep 1
     exec bash "$SELF"
     exit 0
@@ -37,16 +37,16 @@ show_menu() {
   CURRENT=$(su -c "settings get global device_name" 2>/dev/null)
   [[ -z "$CURRENT" ]] && CURRENT="(tidak ditemukan)"
   echo "================================"
-  echo " Device Name Changer v$VERSION"
+  echo "Device Name Changer v$VERSION"
   echo "================================"
   echo ""
-  echo " Current: $CURRENT"
+  echo "Current: $CURRENT"
   echo ""
-  echo " 1. Change Device Name"
-  echo " 0. Exit"
+  echo "1. Change Device Name"
+  echo "0. Exit"
   echo ""
   echo "================================"
-  printf " Pilih: "
+  printf "Pilih: "
 }
 
 while true; do
@@ -56,10 +56,10 @@ while true; do
     1)
       clear
       echo "================================"
-      echo " Change Device Name"
+      echo "Change Device Name"
       echo "================================"
       echo ""
-      printf " Nama baru: "
+      printf "Nama baru: "
       read NEW_NAME
       if [[ -z "$NEW_NAME" ]]; then
         continue
@@ -68,7 +68,7 @@ while true; do
       su -c "settings put secure bluetooth_name \"$NEW_NAME\""
       clear
       echo "================================"
-      echo " Berhasil diubah ke: $NEW_NAME"
+      echo "Berhasil diubah ke: $NEW_NAME"
       echo "================================"
       sleep 2
       ;;
@@ -81,11 +81,6 @@ while true; do
       ;;
   esac
 done
-  esac
-done      sleep 1.5
-      ;;
-    0)
-      clear
       exit 0
       ;;
     *)
