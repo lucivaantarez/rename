@@ -2,18 +2,20 @@
 # rename.sh
 # GitHub: github.com/lucivaantarez/rename
 
-VERSION="1.3"
+VERSION="1.4"
 REMOTE_URL="https://raw.githubusercontent.com/lucivaantarez/rename/main/rename.sh"
 SELF="$HOME/rename.sh"
 
+export TERM=xterm
+export COLUMNS=40
+
 check_update() {
   REMOTE_VERSION=$(curl -sL "$REMOTE_URL" 2>/dev/null | grep '^VERSION=' | head -1 | cut -d'"' -f2)
-  if [[ -z "$REMOTE_VERSION" ]]; then
-    return
-  fi
+  if [[ -z "$REMOTE_VERSION" ]]; then return; fi
   if [[ "$REMOTE_VERSION" != "$VERSION" ]]; then
-    clear
-    echo "[ UPDATE v$VERSION -> v$REMOTE_VERSION ]"
+    tput reset
+    printf "Update v%s -> v%s\n" "$VERSION" "$REMOTE_VERSION"
+    printf "Downloading...\n"
     curl -sL "$REMOTE_URL" | sed 's/\r//' > "$SELF"
     chmod +x "$SELF"
     sleep 1
@@ -25,16 +27,13 @@ check_update() {
 check_update
 
 show_menu() {
-  clear
+  tput reset
   CURRENT=$(su -c "settings get global device_name" 2>/dev/null)
   [[ -z "$CURRENT" ]] && CURRENT="(none)"
-  echo "[ Device Rename v$VERSION ]"
-  echo ""
-  echo "Name: $CURRENT"
-  echo ""
-  echo "1. Rename"
-  echo "0. Exit"
-  echo ""
+  printf "Device Rename v%s\n" "$VERSION"
+  printf "Name: %s\n\n" "$CURRENT"
+  printf "1. Rename\n"
+  printf "0. Exit\n\n"
   printf ">> "
 }
 
@@ -43,28 +42,22 @@ while true; do
   read CHOICE
   case "$CHOICE" in
     1)
-      clear
-      echo "[ Rename Device ]"
-      echo ""
+      tput reset
       printf "New name: "
       read NEW_NAME
-      if [[ -z "$NEW_NAME" ]]; then
-        continue
-      fi
+      if [[ -z "$NEW_NAME" ]]; then continue; fi
       su -c "settings put global device_name \"$NEW_NAME\""
       su -c "settings put secure bluetooth_name \"$NEW_NAME\""
-      clear
-      echo "[ Done: $NEW_NAME ]"
+      tput reset
+      printf "Done: %s\n" "$NEW_NAME"
       sleep 2
       ;;
     0)
-      clear
+      tput reset
       exit 0
       ;;
     *)
       continue
       ;;
-  esac
-done
   esac
 done
