@@ -1,9 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # rename.sh
-# Changes Android device name & Bluetooth name via root
 # GitHub: github.com/lucivaantarez/rename
 
-VERSION="1.2"
+VERSION="1.3"
 REMOTE_URL="https://raw.githubusercontent.com/lucivaantarez/rename/main/rename.sh"
 SELF="$HOME/rename.sh"
 
@@ -14,16 +13,9 @@ check_update() {
   fi
   if [[ "$REMOTE_VERSION" != "$VERSION" ]]; then
     clear
-    echo "================================"
-    echo "Update tersedia!"
-    echo "Local : v$VERSION"
-    echo "Remote: v$REMOTE_VERSION"
-    echo "================================"
-    echo ""
-    echo "Mengunduh versi baru..."
+    echo "[ UPDATE v$VERSION -> v$REMOTE_VERSION ]"
     curl -sL "$REMOTE_URL" | sed 's/\r//' > "$SELF"
     chmod +x "$SELF"
-    echo "Selesai. Memuat ulang..."
     sleep 1
     exec bash "$SELF"
     exit 0
@@ -35,18 +27,15 @@ check_update
 show_menu() {
   clear
   CURRENT=$(su -c "settings get global device_name" 2>/dev/null)
-  [[ -z "$CURRENT" ]] && CURRENT="(tidak ditemukan)"
-  echo "================================"
-  echo "Device Name Changer v$VERSION"
-  echo "================================"
+  [[ -z "$CURRENT" ]] && CURRENT="(none)"
+  echo "[ Device Rename v$VERSION ]"
   echo ""
-  echo "Current: $CURRENT"
+  echo "Name: $CURRENT"
   echo ""
-  echo "1. Change Device Name"
+  echo "1. Rename"
   echo "0. Exit"
   echo ""
-  echo "================================"
-  printf "Pilih: "
+  printf ">> "
 }
 
 while true; do
@@ -55,11 +44,9 @@ while true; do
   case "$CHOICE" in
     1)
       clear
-      echo "================================"
-      echo "Change Device Name"
-      echo "================================"
+      echo "[ Rename Device ]"
       echo ""
-      printf "Nama baru: "
+      printf "New name: "
       read NEW_NAME
       if [[ -z "$NEW_NAME" ]]; then
         continue
@@ -67,9 +54,7 @@ while true; do
       su -c "settings put global device_name \"$NEW_NAME\""
       su -c "settings put secure bluetooth_name \"$NEW_NAME\""
       clear
-      echo "================================"
-      echo "Berhasil diubah ke: $NEW_NAME"
-      echo "================================"
+      echo "[ Done: $NEW_NAME ]"
       sleep 2
       ;;
     0)
@@ -81,10 +66,5 @@ while true; do
       ;;
   esac
 done
-      exit 0
-      ;;
-    *)
-      continue
-      ;;
   esac
 done
