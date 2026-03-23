@@ -7,9 +7,6 @@ VERSION="1.0"
 REMOTE_URL="https://raw.githubusercontent.com/lucivaantarez/rename/main/rename.sh"
 SELF="$HOME/rename.sh"
 
-# -----------------------------------------------
-# Auto-update check
-# -----------------------------------------------
 check_update() {
   REMOTE_VERSION=$(curl -sL "$REMOTE_URL" 2>/dev/null | grep '^VERSION=' | head -1 | cut -d'"' -f2)
 
@@ -26,7 +23,7 @@ check_update() {
     echo "==============================="
     echo ""
     echo "  Mengunduh versi baru..."
-    curl -sL "$REMOTE_URL" -o "$SELF"
+    curl -sL "$REMOTE_URL" | sed 's/\r//' > "$SELF"
     chmod +x "$SELF"
     echo "  ✓ Update selesai. Memuat ulang..."
     sleep 1
@@ -37,9 +34,6 @@ check_update() {
 
 check_update
 
-# -----------------------------------------------
-# Menu
-# -----------------------------------------------
 show_menu() {
   clear
   CURRENT=$(su -c "settings get global device_name" 2>/dev/null)
@@ -84,6 +78,16 @@ while true; do
       echo "  ✓ Berhasil diubah ke: $NEW_NAME"
       echo "==============================="
       sleep 1.5
+      ;;
+    0)
+      clear
+      exit 0
+      ;;
+    *)
+      continue
+      ;;
+  esac
+done      sleep 1.5
       ;;
     0)
       clear
