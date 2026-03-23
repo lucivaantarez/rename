@@ -9,11 +9,9 @@ SELF="$HOME/rename.sh"
 
 check_update() {
   REMOTE_VERSION=$(curl -sL "$REMOTE_URL" 2>/dev/null | grep '^VERSION=' | head -1 | cut -d'"' -f2)
-
   if [[ -z "$REMOTE_VERSION" ]]; then
     return
   fi
-
   if [[ "$REMOTE_VERSION" != "$VERSION" ]]; then
     clear
     echo "==============================="
@@ -25,7 +23,7 @@ check_update() {
     echo "  Mengunduh versi baru..."
     curl -sL "$REMOTE_URL" | sed 's/\r//' > "$SELF"
     chmod +x "$SELF"
-    echo "  ✓ Update selesai. Memuat ulang..."
+    echo "  Selesai. Memuat ulang..."
     sleep 1
     exec bash "$SELF"
     exit 0
@@ -38,7 +36,6 @@ show_menu() {
   clear
   CURRENT=$(su -c "settings get global device_name" 2>/dev/null)
   [[ -z "$CURRENT" ]] && CURRENT="(tidak ditemukan)"
-
   echo "==============================="
   echo "  Device Name Changer v$VERSION"
   echo "==============================="
@@ -56,7 +53,6 @@ show_menu() {
 while true; do
   show_menu
   read CHOICE
-
   case "$CHOICE" in
     1)
       clear
@@ -65,25 +61,26 @@ while true; do
       echo "==============================="
       echo ""
       read -p "  Nama baru: " NEW_NAME
-
       if [[ -z "$NEW_NAME" ]]; then
         continue
       fi
-
       su -c "settings put global device_name \"$NEW_NAME\""
       su -c "settings put secure bluetooth_name \"$NEW_NAME\""
-
       clear
       echo "==============================="
-      echo "  ✓ Berhasil diubah ke: $NEW_NAME"
+      echo "  Berhasil diubah ke: $NEW_NAME"
       echo "==============================="
-      sleep 1.5
+      sleep 2
       ;;
     0)
       clear
       exit 0
       ;;
     *)
+      continue
+      ;;
+  esac
+done
       continue
       ;;
   esac
